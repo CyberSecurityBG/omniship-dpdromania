@@ -1,0 +1,25 @@
+{
+    "name": "simexis/omniship-dpdromania",
+
+    "description": "PHP library to communicate with the berry.",
+
+    "require": {
+        "php": "^7",
+        "simexis/omniship": "dev-master"
+    },
+
+    "license": "LGPL-2.1",
+
+    "autoload": {
+        "psr-4": {
+            "Omniship\\Dpdromania\\": "src"
+        }
+    },
+
+    "authors": [
+        {
+            "name": "Stoyan Stoimenov",
+            "email": "s.stoimenovbg@gmail.com"
+        }
+    ]
+}
