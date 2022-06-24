@@ -1,7 +1,7 @@
 {
     "name": "awsbg/omniship-dpdromania",
 
-    "description": "PHP library to communicate with the berry.",
+    "description": "PHP library to communicate with the DPD.",
 
     "require": {
         "php": "^7",
