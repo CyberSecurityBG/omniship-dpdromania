@@ -14,16 +14,14 @@ class Client
     protected $username;
     protected $password;
     protected $country;
-    protected $client_id;
     protected $error;
     const ENDPOINTS = ['RO' => 'https://api.dpd.ro/v1/', 'BG' => 'https://api.speedy.bg/v1/'];
 
-    public function __construct($username, $password, $country, $client_id = null)
+    public function __construct($username, $password, $country)
     {
         $this->username = $username;
         $this->password = $password;
         $this->country = $country;
-        $this->client_id = $client_id;
     }
 
 
@@ -37,20 +35,17 @@ class Client
     {
         try {
             $client = new HttpClient(['base_uri' => self::ENDPOINTS[$this->country]]);
-            if ($method == 'POST') {
+            if($method == 'POST') {
                 $response = $client->request($method, $endpoint, [
                     'json' => $data,
                     'headers' => [
                         'Content-type' => 'application/json',
                     ],
                 ]);
-            } elseif ($method == 'GET') {
+            } elseif($method == 'GET'){
                 $response = $client->request('GET', $endpoint, [
                     'query' => $data
                 ]);
-            }
-            if ($endpoint == 'print') {
-                return $response->getBody()->getContents();
             }
             return json_decode($response->getBody()->getContents());
         } catch (\Exception $e) {
@@ -68,7 +63,7 @@ class Client
     public function getCountries($type, $value)
     {
         $countrues = $this->SendRequest('GET', 'location/country', ['userName' => $this->username, 'password' => $this->password, $type => $value]);
-        if (empty($countrues->error)) {
+        if(empty($countrues->error)) {
             return $countrues->countries;
         }
         return false;
@@ -80,15 +75,14 @@ class Client
      * @param $name
      * @return false
      */
-    public function getState($country_id, $name)
-    {
+    public function getState($country_id, $name){
         $state = $this->SendRequest('GET', 'location/state', [
             'userName' => $this->username,
             'password' => $this->password,
             'countryId' => $country_id,
             'name' => $name
         ]);
-        if (empty($state->error)) {
+        if(empty($state->error)) {
             return $state->states;
         }
         return false;
@@ -100,8 +94,7 @@ class Client
      * @param $postcode
      * @return false
      */
-    public function getCities($country_id, $name = null, $postcode = null)
-    {
+    public function getCities($country_id, $name = null, $postcode = null){
         $city = $this->SendRequest('GET', 'location/site', [
             'userName' => $this->username,
             'password' => $this->password,
@@ -109,7 +102,7 @@ class Client
             'name' => $name,
             'postCode' => $postcode
         ]);
-        if (empty($city->error)) {
+        if(empty($city->error)) {
             return $city->sites;
         }
         return false;
@@ -120,15 +113,14 @@ class Client
      * @param $name
      * @return false
      */
-    public function GetStreet($city_id, $name = null)
-    {
+    public function GetStreet($city_id, $name = null){
         $street = $this->SendRequest('GET', 'location/street', [
             'userName' => $this->username,
             'password' => $this->password,
             'siteId' => $city_id,
             'name' => $name,
         ]);
-        if (empty($street->error)) {
+        if(empty($street->error)) {
             return $street->streets;
         }
         return false;
@@ -141,8 +133,7 @@ class Client
      * @param $limit
      * @return false
      */
-    public function getOffices($country_id, $city_id, $name = null, $limit = null)
-    {
+    public function getOffices($country_id, $city_id, $name = null, $limit = null){
         $offices = $this->SendRequest('GET', 'location/office', [
             'userName' => $this->username,
             'password' => $this->password,
@@ -151,7 +142,7 @@ class Client
             'name' => $name,
             'limit' => $limit
         ]);
-        if (empty($offices->error)) {
+        if(empty($offices->error)) {
             return $offices->offices;
         }
         return false;
@@ -161,13 +152,12 @@ class Client
      * @param $id
      * @return false
      */
-    public function getOfficeById($id)
-    {
-        $office = $this->SendRequest('GET', 'location/office/' . $id, [
+    public function getOfficeById($id){
+        $office = $this->SendRequest('GET', 'location/office/'.$id, [
             'userName' => $this->username,
             'password' => $this->password,
         ]);
-        if (empty($office->error)) {
+        if(empty($office->error)) {
             return $office->office;
         }
         return false;
@@ -177,35 +167,13 @@ class Client
      * @param $client_id
      * @return false
      */
-    public function getClienAdrresses($client_id)
-    {
+    public function getClienAdrresses($client_id){
         $client = $this->SendRequest('GET', 'client/contract', [
             'userName' => $this->username,
             'password' => $this->password,
             'clientSystemId' => $client_id
         ]);
-        if (empty($client->error)) {
-            return $client->clients;
-        }
-        return false;
-    }
-
-    public function createPDF($bol_id = [], $format = 'A4')
-    {
-        $set = [];
-        foreach ($bol_id as $bol) {
-            $set[] = ['parcel' => ['id' => $bol]];
-        }
-        $label = $this->SendRequest('POST', 'print', [
-            'userName' => $this->username,
-            'password' => $this->password,
-            'clientSystemId' => $this->client_id,
-            'format' => 'pdf',
-            'paperSize' => $format,
-            'parcels' => $set,
-        ]);
-        return $label;
-        if (empty($label->error)) {
+        if(empty($client->error)) {
             return $client->clients;
         }
         return false;
