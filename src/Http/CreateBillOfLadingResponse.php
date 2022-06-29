@@ -26,9 +26,19 @@ class CreateBillOfLadingResponse extends AbstractResponse
         if (!empty($this->getMessage())) {
             return null;
         }
+
         $result = new Create();
+        if(!empty($parcels = (array)$this->data->parcels) && count($parcels) > 1){
+            $parcel_name = [];
+            foreach($this->data->parcels as $parcel){
+                $parcel_name[] = $parcel->id;
+            }
+            $result->setBolId(implode('-', $parcel_name));
+        } else {
+            $result->setBolId($this->data->id);
+        }
         $result->setServiceId(strtolower($this->getRequest()->getServiceId()));
-        $result->setBolId($this->data->id);
+
         $result->setBillOfLadingSource(base64_encode($this->getRequest()->getClient()->createPDF([$this->data->id])));
         $result->setBillOfLadingType($result::PDF);
         $result->setEstimatedDeliveryDate(Carbon::createFromFormat('Y-m-d\TH:i:sP', $this->data->deliveryDeadline));
@@ -36,7 +46,6 @@ class CreateBillOfLadingResponse extends AbstractResponse
         $result->setTotal($this->data->price->total);
         $result->setCurrency('RON');
         $result->setCurrency($this->data->price->currency);
-
         return $result;
     }
 

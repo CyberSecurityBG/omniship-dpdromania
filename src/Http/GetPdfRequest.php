@@ -18,7 +18,10 @@ class GetPdfRequest extends AbstractRequest
      */
     public function getData() {
         $set = [];
-        $set[] = ['parcel' => ['id' => $this->getBolId()]];
+        foreach(explode('-', $this->getBolId()) as $bol){
+            $set[] = ['parcel' => ['id' => $bol]];
+        }
+
         return [
             'userName' => $this->getUsername(),
             'password' => $this->getPassword(),

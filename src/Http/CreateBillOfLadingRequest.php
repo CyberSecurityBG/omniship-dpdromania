@@ -61,7 +61,7 @@ class CreateBillOfLadingRequest extends AbstractRequest
         $data['recipient']['privatePerson'] = true;
         $data['recipient']['phone1']['number'] = $receiver_address->getPhone();
         $data['recipient']['email'] = $this->getReceiverEmail();
-        $data['recipient']['shipmentNote'] = $this->getClientNote();
+        $data['recipient']['shipmentNote'] = mb_strimwidth( $this->getClientNote() ,0,99,'...','utf-8');;
         $data['recipient']['clientName'] = $receiver_address->getFullName();
         $data['recipient']['contactName'] = $receiver_address->getFullName();
         if (!empty($receiver_address->getOffice())) {
@@ -110,10 +110,11 @@ class CreateBillOfLadingRequest extends AbstractRequest
             case '3': $payer =  'THIRD_PARTY'; break;
             default: $payer =  $this->getPayer(); break;
         }
+        $contnt_info = implode(', ', $content_info);
         $data['payment']['courierServicePayer'] = $payer;
         $data['content']['parcelsCount'] = $this->getItems()->count();
         $data['content']['totalWeight'] = $this->getWeight();
-        $data['content']['contents'] = implode(', ', $content_info);
+        $data['content']['contents'] = mb_strimwidth($contnt_info,0,99,'...','utf-8');
         $data['content']['package'] = 'BOX';
         $bank_account = $this->getOtherParameters('senderBankAccount');
         if (!empty($bank_account)) {
