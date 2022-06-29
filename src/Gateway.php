@@ -14,20 +14,11 @@ use Omniship\Dpdromania\Http\ValidatePostCodeRequest;
 use Omniship\Dpdromania\Http\ValidatePostCodeResponse;
 use Omniship\Dpdromania\Http\CancelBillOfLadingRequest;
 
-
-//use Omniship\Dpdromania\Http\ValidateCredentialsRequest;
-//use Omniship\Dpdromania\Http\ShippingQuoteRequest;
-//use Omniship\Dpdromania\Http\CreateBillOfLadingRequest;
-//use Omniship\Dpdromania\Http\ServicesRequest;
-
-//use Omniship\Dpdromania\Http\GetPdfRequest;
-//use Omniship\Dpdromania\Http\TrackingParcelRequest;
-
 class Gateway extends AbstractGateway
 {
 
     private $name = 'dpdromania';
-    CONST TRACKING_URL = '';
+    const TRACKING_URL = 'https://berry.bg/bg/t/';
     /**
      * @return stringc
      */
@@ -225,6 +216,22 @@ class Gateway extends AbstractGateway
     public function getPdf($bol_id)
     {
         return $this->createRequest(GetPdfRequest::class, $this->setBolId($bol_id)->getParameters());
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportsCashOnDelivery()
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportsGetPdf()
+    {
+        return true;
     }
 
 }

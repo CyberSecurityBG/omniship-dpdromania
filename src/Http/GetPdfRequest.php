@@ -24,7 +24,7 @@ class GetPdfRequest extends AbstractRequest
             'password' => $this->getPassword(),
             'clientSystemId' => $this->getClientId(),
             'format' => 'pdf',
-            'paperSize' => 'A4', //$this->getOtherParameters('format'),
+            'paperSize' => $this->getOtherParameters('printer_type'),
             'parcels' => $set,
         ];
     }

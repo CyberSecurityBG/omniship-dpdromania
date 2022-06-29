@@ -34,6 +34,7 @@ class CreateBillOfLadingResponse extends AbstractResponse
         $result->setEstimatedDeliveryDate(Carbon::createFromFormat('Y-m-d\TH:i:sP', $this->data->deliveryDeadline));
         $result->setPickupDate(Carbon::createFromFormat('Y-m-d', $this->data->pickupDate));
         $result->setTotal($this->data->price->total);
+        $result->setCurrency('RON');
         $result->setCurrency($this->data->price->currency);
 
         return $result;

@@ -7,6 +7,7 @@ use http\Client\Response;
 use Omniship\Address\City;
 use Omniship\Address\Office;
 use Omniship\Helper\Collection;
+use Pdp\Exception;
 
 class Client
 {
@@ -52,11 +53,12 @@ class Client
             if ($endpoint == 'print') {
                 return $response->getBody()->getContents();
             }
+
             return json_decode($response->getBody()->getContents());
         } catch (\Exception $e) {
             return $this->error = [
                 'code' => $e->getCode(),
-                'error' => $e->getResponse()->getBody()->getContents()
+                'error' => $e->getMessage()
             ];
         }
     }
@@ -122,7 +124,7 @@ class Client
      */
     public function GetStreet($city_id, $name = null)
     {
-        $street = $this->SendRequest('GET', 'location/street', [
+        $street = $this->SendRequest('POST', 'location/street', [
             'userName' => $this->username,
             'password' => $this->password,
             'siteId' => $city_id,
@@ -141,16 +143,22 @@ class Client
      * @param $limit
      * @return false
      */
-    public function getOffices($country_id, $city_id, $name = null, $limit = null)
+    public function getOffices($name = null, $country_id = null, $city_id = null, $limit = null)
     {
-        $offices = $this->SendRequest('GET', 'location/office', [
-            'userName' => $this->username,
-            'password' => $this->password,
-            'countryId' => $country_id,
-            'siteId' => $city_id,
-            'name' => $name,
-            'limit' => $limit
-        ]);
+        $request['userName'] = $this->username;
+        $request['password'] = $this->password;
+        if (!empty($country_id)) {
+            $request['countryId'] = $country_id;
+        }
+        if (!empty($city_id)) {
+            $request['siteId'] = $city_id;
+        }
+        if (!empty($name)) {
+            $request['name'] = $name;
+        }
+        $request['limit'] = -1;
+        $offices = $this->SendRequest('GET', 'location/office', $request);
+
         if (empty($offices->error)) {
             return $offices->offices;
         }
@@ -167,7 +175,7 @@ class Client
             'userName' => $this->username,
             'password' => $this->password,
         ]);
-        if (empty($office->error)) {
+        if (empty($office->error) && !empty($office->office)) {
             return $office->office;
         }
         return false;
@@ -190,6 +198,28 @@ class Client
         return false;
     }
 
+    /**
+     * @param $client_id
+     * @return false
+     */
+    public function getClienInfo($client_id)
+    {
+        $client = $this->SendRequest('POST', 'client/' . $client_id, [
+            'userName' => $this->username,
+            'password' => $this->password,
+            'clientSystemId' => $client_id
+        ]);
+        if (empty($client->error)) {
+            return $client->client;
+        }
+        return false;
+    }
+
+    /**
+     * @param $bol_id
+     * @param $format
+     * @return array|mixed|string
+     */
     public function createPDF($bol_id = [], $format = 'A4')
     {
         $set = [];
@@ -209,5 +239,42 @@ class Client
             return $client->clients;
         }
         return false;
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function getCountryById($id)
+    {
+        if (!empty($id)) {
+            $country = $this->SendRequest('POST', 'location/country/' . $id, [
+                'userName' => $this->username,
+                'password' => $this->password,
+            ]);
+            return $country->country;
+        }
+        return null;
+    }
+
+    /**
+     * @param $name
+     * @return void
+     */
+    public function getCountryByIso2($name)
+    {
+        if (!empty($name)) {
+            $country = $this->SendRequest('POST', 'location/country', [
+                'userName' => $this->username,
+                'password' => $this->password,
+                'isoAlpha2' => $name
+            ]);
+            foreach ($country->countries as $country) {
+                if ($name == $country->isoAlpha2) {
+                    return $country;
+                }
+            }
+        }
+        return null;
     }
 }

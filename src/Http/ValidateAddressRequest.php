@@ -29,7 +29,7 @@ class ValidateAddressRequest extends AbstractRequest
         $data['siteId'] = $address->getCity()->getId();
         $data['siteName'] = $address->getCity()->getName();
         $data['postCode'] = $address->getPostCode();
-        $data['streetId'] = $address->getStreet()->getId();
+        //$data['streetId'] = $address->getStreet()->getId();
         $data['streetName'] = $address->getStreet()->getName();
         $data['streetNo'] = $address->getStreetNumber();
         //$data['addressLine1'] = $address->getCountry()->getName().', '.$address->getCity()->getName().', '.$address->getStreet()->getName().' '.$address->getStreetNumber();
