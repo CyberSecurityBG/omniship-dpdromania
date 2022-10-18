@@ -15,6 +15,7 @@ class ShippingQuoteRequest extends AbstractRequest
         $data['userName'] = $this->getUsername();
         $data['password'] = $this->getPassword();
         $data['clientSystemId'] =  $sender_address->getId();
+       // $data['language'] = 'BG';
 
         if (!empty($sender_address->getOffice())) {
             $data['sender']['clientId'] = $sender_address->getId();
@@ -41,10 +42,10 @@ class ShippingQuoteRequest extends AbstractRequest
             $data['recipient']['pickupOfficeId'] = (int)$receiver_address->getOffice()->getId();
         } else {
             $data['recipient']['addressLocation']['countryId'] = $receiver_address->getCountry()->getId();
-            if (!empty( $receiver_address->getState()->getId())) {
+            if (!empty( $receiver_address->getState())) {
                 $data['recipient']['addressLocation']['stateId'] = $receiver_address->getState()->getId();
             }
-            if (!empty($receiver_address->getCity()->getId())) {
+            if (!empty($receiver_address->getCity())) {
                 $data['recipient']['addressLocation']['siteId'] = $receiver_address->getCity()->getId();
             } else {
                 $data['recipient']['addressLocation']['siteName'] = $receiver_address->getCity()->getName();
@@ -56,7 +57,7 @@ class ShippingQuoteRequest extends AbstractRequest
         $data['service']['serviceIds'] = $this->getOtherParameters('services');
         if (!empty($this->getCashOnDeliveryAmount())) {
             $data['service']['additionalServices']['cod']['amount'] = $this->getCashOnDeliveryAmount();
-           // $data['service']['additionalServices']['cod']['amount'] = $this->getCurrency();
+          //  $data['service']['additionalServices']['cod']['currencyCode'] = $this->getCurrency();
             if($this->getOtherParameters('pos_enabled') == 1){
                 $data['service']['additionalServices']['cod']['cardPaymentForbidden'] = false;
             }
@@ -106,12 +107,14 @@ class ShippingQuoteRequest extends AbstractRequest
 
     public function sendData($data)
     {
+      //  dd($data);
         $request = $this->getClient()->SendRequest('POST', 'calculate', $data);
         return $this->createResponse($request);
     }
 
     protected function createResponse($data)
     {
+      //  dd($data);
         return $this->response = new ShippingQuoteResponse($this, $data);
     }
 }
