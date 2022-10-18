@@ -71,7 +71,7 @@ class CreateBillOfLadingRequest extends AbstractRequest
             if (!empty($receiver_address->getState())) {
                 $data['recipient']['address']['stateId'] = $receiver_address->getState()->getId();
             }
-            if (!empty($receiver_address->getCity()->getId())) {
+            if (!empty($receiver_address->getCity())) {
                 $data['recipient']['address']['siteId'] = $receiver_address->getCity()->getId();
             } else {
                 $data['recipient']['address']['siteName'] = $receiver_address->getCity()->getName();
